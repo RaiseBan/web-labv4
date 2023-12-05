@@ -69,7 +69,7 @@ export default {
       this.draw();
       for (let i = 0; i < this.tableData.length; i++) {
         let r = this.userInputR === null?this.currentR: this.userInputR;
-        this.drawPointWithCords(this.hit(this.tableData[i].x, this.tableData[i].y, r), this.tableData[i].x, this.tableData[i].y, r);
+        this.drawPointWithCords(this.hit(this.tableData[i].x, this.tableData[i].y, Math.abs(r)), this.tableData[i].x, this.tableData[i].y, Math.abs(r));
       }
     },
     drawPointWithCords(flag, x, y, r) {
@@ -132,7 +132,7 @@ export default {
         r: r
       };
       const jwtToken = sessionStorage.getItem('jwtToken');
-      fetch('http://localhost:8080/api/checkArea', {
+      fetch('http://localhost:8080/api/shots', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -141,18 +141,16 @@ export default {
         body: JSON.stringify(formData),
       })
           .then(response => {
-            if (!response.ok) {
+            console.log(response.status)
+            if (response.status !== 201) {
               throw new Error('Network response was not ok');
             }
-            return response.text();
+            return response.json();
           })
-          .then(text => {
-            const answerObject = {
-              ...formData,
-              result: text
-            };
-            this.$emit('clickOnCanvas', answerObject);
-            this.drawPoint(text);
+          .then(data => {
+
+            this.$emit('clickOnCanvas', data);
+            this.drawPoint(data.result);
           })
           .catch(error => {
             console.error('Ошибка при отправке формы:', error);

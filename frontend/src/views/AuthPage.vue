@@ -50,7 +50,7 @@ export default {
       this.registrationError = false;
     },
     login() {
-      fetch("http://localhost:8080/api/auth/login", {
+      fetch("http://localhost:8080/api/users/login", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,6 +62,7 @@ export default {
       })
           .then(response => {
             if (!response.ok) {
+              console.log(response.status);
               throw new Error('Login failed');
             }
             return response.text();
@@ -76,7 +77,7 @@ export default {
           })
     },
     register() {
-      fetch("http://localhost:8080/api/auth/register", {
+      fetch("http://localhost:8080/api/users/register", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

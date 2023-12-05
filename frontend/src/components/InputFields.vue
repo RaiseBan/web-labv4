@@ -83,7 +83,7 @@ export default {
         r: this.r
       };
 
-      fetch('http://localhost:8080/api/checkArea', {
+      fetch('http://localhost:8080/api/shots', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -92,18 +92,24 @@ export default {
         body: JSON.stringify(formData),
       })
           .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
+            console.log(response.status)
+            if (response.status === 201) {
+              return response.json();
             }
-            return response.text();
+            else if (response.status === 401){
+              alert("Вы не авторизированы");
+              throw new Error("Unauthorized");
+
+            }
+            else {
+              throw new Error("Unexpected error");
+            }
+
           })
-          .then(text => {
-            const answerObject = {
-              ...formData,
-              result: text
-            };
-            console.log(text);
-            this.$emit('formSubmitted', answerObject);
+          .then(data => {
+
+            console.log("принятные данные: ", data);
+            this.$emit('formSubmitted', data);
           })
           .catch(error => {
             console.error('Ошибка при отправке формы:', error);

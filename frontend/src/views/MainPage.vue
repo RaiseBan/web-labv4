@@ -40,17 +40,22 @@ export default {
 
     fetchUserData() {
       const jwtToken = sessionStorage.getItem('jwtToken');
+      console.log(jwtToken);
       if (!jwtToken) {
+        console.log("logOut");
         return;
+
       }
 
-      fetch("http://localhost:8080/api/user/data", {
+      fetch("http://localhost:8080/api/shots", {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${jwtToken}`,
           'Content-Type': 'application/json'
         },
       })
           .then(response => {
+            console.log(response.status);
             if (!response.ok) {
               throw new Error('Failed to fetch user data');
             }

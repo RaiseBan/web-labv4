@@ -4,6 +4,7 @@ import com.example.backend.Utils.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,11 +29,17 @@ public class SecurityConfig {
         http
                 .cors(withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Разрешить все запросы к эндпоинтам аутентификации
+                        .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+                        // Разрешить доступ к статическим ресурсам
+                        .requestMatchers("/", "/index.html", "/css/**", "/js/**", "/img/**").permitAll()
+                        // Разрешить GET запросы к эндпоинту получения данных о выстрелах без аутентификации
+                        .requestMatchers(HttpMethod.GET, "/api/shots").permitAll()
+                        // Требовать аутентификацию для всех остальных запросов
                         .anyRequest().authenticated())
                 .httpBasic(withDefaults())
-                .csrf(AbstractHttpConfigurer::disable) // Отключаем CSRF
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Добавляем JWT фильтр
+                .csrf(AbstractHttpConfigurer::disable) // Отключить CSRF
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Добавить JWT фильтр перед базовой аутентификацией
 
         return http.build();
     }

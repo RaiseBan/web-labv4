@@ -1,5 +1,6 @@
 package com.example.backend.controllers;
 
+import com.example.backend.DataBase.UserDTO;
 import com.example.backend.Entity.User;
 import com.example.backend.Utils.JwtUtil;
 import com.example.backend.service.UserService;
@@ -8,8 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/users")
 public class UserAuthController {
 
     private final UserService userService;
@@ -23,8 +26,16 @@ public class UserAuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        User registeredUser = userService.registerNewUserAccount(user.getUsername(), user.getPassword());
-        return ResponseEntity.ok(registeredUser);
+        try{
+            User registeredUser = userService.registerNewUserAccount(user.getUsername(), user.getPassword());
+            UserDTO userDTO = new UserDTO(registeredUser.getUsername());
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of(
+                    "error", "Username already taken"
+            ));
+        }
+
     }
 
     @PostMapping("/login")

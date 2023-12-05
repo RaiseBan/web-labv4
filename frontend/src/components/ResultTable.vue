@@ -33,14 +33,15 @@ export default {
   methods: {
     clearTable(){
       const jwtToken = sessionStorage.getItem('jwtToken');
-      fetch('http://localhost:8080/api/clearTable', {
+      fetch('http://localhost:8080/api/shots', {
         method: 'DELETE',
         headers:{
           "Authorization": `Bearer ${jwtToken}`
         }
       })
           .then(response => {
-            if (!response.ok) {
+            console.log(response.status);
+            if (response.status !== 204) {
               throw new Error('Network response was not ok');
             }
             this.$emit('clearTable');
